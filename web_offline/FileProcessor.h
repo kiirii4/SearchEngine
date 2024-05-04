@@ -8,7 +8,7 @@ using std::vector;
 
 class FileProcessor {
   public:
-    string process(const string &fileName);
+    vector<string> process(const string &fileName);
 };
 
 #endif //_FILEPROCESSOR_H

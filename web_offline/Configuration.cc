@@ -4,7 +4,6 @@
 
 #include "Configuration.h"
 #include <fstream>
-#include <iostream>
 #include <sstream>
 
 Configuration::Configuration(const string &filepath) {

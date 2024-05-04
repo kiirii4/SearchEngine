@@ -17,8 +17,8 @@ using std::unordered_map;
 class Configuration {
   public:
     Configuration(const string &filepath);
-    unordered_map<string, string> getConfigMap();
-    set<string> getStopWordSet();
+    unordered_map<string, string> &getConfigMap();
+    set<string> &getStopWordSet();
 
   private:
     void stop_wordsInit();
@@ -26,10 +26,10 @@ class Configuration {
     set<string> _stopWordSet;
 };
 
-inline unordered_map<string, string>
+inline unordered_map<string, string> &
 Configuration::Configuration::getConfigMap() {
     return _configMap;
 }
 
-inline set<string> Configuration::getStopWordSet() { return _stopWordSet; }
+inline set<string> &Configuration::getStopWordSet() { return _stopWordSet; }
 #endif //_CONFIGURATION_H
