@@ -1,8 +1,8 @@
 #ifndef _PAGELIB_H
 #define _PAGELIB_H
 
-#include "Configuration.h"
-#include "DirScanner.h"
+#include "../shared/Configuration.h"
+#include "../shared/DirScanner.h"
 #include "FileProcessor.h"
 #include <map>
 #include <utility>

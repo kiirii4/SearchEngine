@@ -2,9 +2,9 @@
 #define _PAGELIBPREPROCESSOR_H
 
 #include "../../include/simhash/Simhasher.hpp"
-#include "Configuration.h"
-#include "SplitTool.h"
-#include "WebPage.h"
+#include "../shared/Configuration.h"
+#include "../shared/SplitTool.h"
+#include "../shared/WebPage.h"
 #include <memory>
 #include <set>
 #include <string>

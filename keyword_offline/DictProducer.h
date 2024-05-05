@@ -1,32 +1,37 @@
-/**
- * Project SearchEngine
- */
-
-
 #ifndef _DICTPRODUCER_H
 #define _DICTPRODUCER_H
 
+#include "../shared/Configuration.h"
+#include "../shared/DirScanner.h"
+#include "../shared/SplitTool.h"
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
+using std::map;
+using std::pair;
+using std::string;
+using std::vector;
+
 class DictProducer {
-public: 
-    
-/**
- * @param string
- * @param tool
- */
-void DictProducer(void string, void tool);
-    
-void buildEnDict();
-    
-void buildCnDict();
-    
-void createIndex();
-    
-void store();
-private: 
-    vector<string> _files;
-    vector<pair<string,int>> _dict;
-    map<string,set<int>> _index;
-    SplitTool* _cuttor;
+
+  public:
+    DictProducer(string, SplitTool *tool, DirScanner *scanner);
+
+    void buildEnDict();
+
+    void buildCnDict();
+
+    void createIndex();
+
+    void store();
+
+  private:
+    DirScanner *_scanner;
+    vector<pair<string, int>> _dict;
+    map<string, set<int>> _index;
+    SplitTool *_cuttor;
 };
 
 #endif //_DICTPRODUCER_H

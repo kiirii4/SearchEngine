@@ -1,0 +1,22 @@
+2024-05-04 16:54:46,348
+[ERROR] [PageLib.cc:store:45]can't open offsetLib file!
+2024-05-05 01:25:20,304
+[ERROR] [Configuration.cc:stop_wordsInit:35]open stop word file failed
+2024-05-05 01:57:44,152
+[ERROR] [PageLibPreprocessor.cc:cutRedundantPage:48]open webLib file failed
+2024-05-05 02:05:04,148
+[ERROR] [PageLibPreprocessor.cc:cutRedundantPage:50]open webLib file failed
+2024-05-05 02:11:17,431
+[ERROR] [PageLibPreprocessor.cc:cutRedundantPage:50]open webLib file failed
+2024-05-05 02:15:47,870
+[ERROR] [PageLibPreprocessor.cc:cutRedundantPage:50]open webLib file failed
+2024-05-05 02:16:16,373
+[ERROR] [PageLibPreprocessor.cc:cutRedundantPage:50]open webLib file failed
+2024-05-05 02:20:08,129
+[ERROR] [PageLibPreprocessor.cc:cutRedundantPage:50]open webLib file failed
+2024-05-05 02:43:45,829
+[ERROR] [PageLibPreprocessor.cc:cutRedundantPage:50]open webLib file failed
+2024-05-05 09:08:29,276
+[ERROR] [PageLibPreprocessor.cc:cutRedundantPage:51]open webLib file failed
+2024-05-05 10:21:18,354
+[ERROR] [PageLibPreprocessor.cc:cutRedundantPage:50]open webLib file failed
