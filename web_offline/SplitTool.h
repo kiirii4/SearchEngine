@@ -11,8 +11,7 @@ using std::vector;
 class SplitTool {
   public:
     vector<string> cut(const string &str);
-    SplitTool(Configuration &conf, const char *, const char *, const char *,
-              const char *, const char *);
+    SplitTool(Configuration &conf, const char *, const char *, const char *);
 
   private:
     cppjieba::Jieba _jieba;

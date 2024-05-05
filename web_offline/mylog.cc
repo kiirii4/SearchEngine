@@ -11,6 +11,7 @@ Mylogger::Mylogger()
       fatalLog(root.getInstance("fatalLog")),
       warnLog(root.getInstance("warnLog")),
       debugLog(root.getInstance("debugLog")) {
+    ::atexit(&Mylogger::loggerDestoryer);
     log4cpp::Appender *consoleApp =
         new log4cpp::OstreamAppender("console", &std::cout);
     log4cpp::Appender *fatalFileApp =
@@ -51,6 +52,7 @@ Mylogger::~Mylogger() { log4cpp::Category::shutdown(); }
 void Mylogger::loggerDestoryer() {
     if (logger != nullptr) {
         delete logger;
+        logger = nullptr;
     }
 }
 

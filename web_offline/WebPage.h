@@ -1,7 +1,3 @@
-/**
- * Project SearchEngine
- */
-
 #ifndef _WEBPAGE_H
 #define _WEBPAGE_H
 #include "Configuration.h"
@@ -14,23 +10,22 @@ using std::string;
 using std::vector;
 
 class WebPage {
+    friend class PageLibPreprocessor;
+
   public:
-    WebPage(string &doc, Configuration &config);
-    int getDocId();
-    string getTitle();
-    map<string, int> &getWordsMap();
+    WebPage(const string &docTitle, const string &docUrl,
+            const string &docContent, uint64_t simahsh)
+        : _docTitle(docTitle), _docUrl(docUrl), _docContent(docContent),
+          _simahsh(simahsh) {}
+    string &getDoc();
 
   private:
-    void processDoc(const string &doc);
-    void calcTopK(vector<string> &worsVec, int kl, set<string> &stopWordlist);
-
-  private:
-    int _docId;
     string _docTitle;
     string _docUrl;
     string _docContent;
-    vector<string> _topWords;
-    map<string, int> _wordsMap;
+    uint64_t _simahsh;
 };
+
+inline string &WebPage::getDoc() { return _docContent; }
 
 #endif //_WEBPAGE_H

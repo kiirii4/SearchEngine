@@ -18,7 +18,7 @@ vector<string> FileProcessor::process(const string &fileName) {
     vector<WebItem> items;
     tinyxml2::XMLDocument doc;
     doc.LoadFile(fileName.c_str());
-    if (doc.Error()) {
+    if (doc.ErrorID()) {
         Logerror("load file error");
         return vector<string>();
     }
@@ -49,8 +49,8 @@ vector<string> FileProcessor::process(const string &fileName) {
 
     vector<string> result;
     result.reserve(items.size());
-    ostringstream oss;
     for (auto &item : items) {
+        ostringstream oss;
         oss << "<doc>\n<title>" << item._title << "</title>\n<link>"
             << item._link << "</link>\n<desc>" << item._desc
             << "</desc>\n</doc>\n";

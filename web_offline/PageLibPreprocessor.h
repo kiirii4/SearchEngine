@@ -1,8 +1,25 @@
 #ifndef _PAGELIBPREPROCESSOR_H
 #define _PAGELIBPREPROCESSOR_H
 
+#include "../../include/simhash/Simhasher.hpp"
+#include "Configuration.h"
+#include "SplitTool.h"
+#include "WebPage.h"
+#include <memory>
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <utility>
+using std::pair;
+using std::set;
+using std::string;
+using std::unique_ptr;
+using std::unordered_map;
+
 class PageLibPreprocessor {
   public:
+    PageLibPreprocessor(Configuration &conf, SplitTool *wordCutter);
+
     void cutRedundantPage();
 
     void bulidInvertIndexMap();
@@ -10,9 +27,14 @@ class PageLibPreprocessor {
     void storeOnDisk();
 
   private:
+    simhash::Simhasher *createSimhasher();
+
+  private:
+    Configuration &_conf;
+    unique_ptr<simhash::Simhasher> _psimhasher;
     vector<WebPage> _pageList;
-    unordered_map _offsetLib;
-    unordered_map _invertIndexLib;
+    // vector<std::tuple<int, size_t, size_t>> _offsetLib;
+    unordered_map<string, map<int, double>> _invertIndexLib;
     SplitTool *_wordCutter;
 };
 
