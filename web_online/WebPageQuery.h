@@ -5,9 +5,8 @@
 #ifndef _WEBPAGEQUERY_H
 #define _WEBPAGEQUERY_H
 
-#include "../include/nlohmann/json.hpp"
-#include "SplitTool.h"
-#include "WebPage.h"
+#include "../shared/SplitTool.h"
+#include "../shared/WebPage.h"
 #include <queue>
 #include <set>
 #include <string>
@@ -21,7 +20,7 @@ using std::set;
 using std::string;
 using std::unordered_map;
 using std::vector;
-using Json = nlohmann::json;
+// using Json = nlohmann::json;
 
 struct PairHash {
     template <typename T1, typename T2>
@@ -54,7 +53,7 @@ class WebPageQuery {
     /**
      * @param key
      */
-    string doQuery(string key);
+    static string doQuery(string key);
 
   private:
     int topK = 20;
