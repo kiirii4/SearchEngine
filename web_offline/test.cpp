@@ -7,14 +7,14 @@
 #include <iostream>
 
 void testPageLib() {
-    Configuration config("../../conf/init.config");
+    Configuration config;
     PageLib pageLib(config);
     pageLib.create();
     pageLib.store();
 }
 
 void testPageLibPreprocessor() {
-    Configuration config("../../conf/init.config");
+    Configuration config;
     auto configMap = config.getConfigMap();
     const char *dict_path = configMap["DICT_PATH"].c_str();
     const char *hmm_path = configMap["HMM_PATH"].c_str();
@@ -29,7 +29,7 @@ void testPageLibPreprocessor() {
 }
 
 void testSimhasher() {
-    Configuration config("../../conf/init.config");
+    Configuration config;
     auto configMap = config.getConfigMap();
     const char *dict_path = configMap["DICT_PATH"].c_str();
     const char *hmm_path = configMap["HMM_PATH"].c_str();
@@ -43,7 +43,7 @@ void testSimhasher() {
 }
 
 void testXml2() {
-    Configuration config("../../conf/init.config");
+    Configuration config;
     auto configMap = config.getConfigMap();
     const char *web_lib_raw = configMap["WEB_LIB_RAW"].c_str();
     std::cout << web_lib_raw << "\n";

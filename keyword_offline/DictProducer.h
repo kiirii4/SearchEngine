@@ -17,17 +17,16 @@ using std::vector;
 class DictProducer {
 
   public:
-    DictProducer(string, SplitTool *tool, DirScanner *scanner);
+    DictProducer(Configuration &config, SplitTool *tool, DirScanner *scanner);
 
     void buildEnDict();
 
     void buildCnDict();
 
-    void createIndex();
-
-    void store();
-
   private:
+    void createIndex();
+    void store(const string &);
+    Configuration &_config;
     DirScanner *_scanner;
     vector<pair<string, int>> _dict;
     map<string, set<int>> _index;

@@ -16,7 +16,7 @@ using std::string;
 using std::unordered_map;
 class Configuration {
   public:
-    Configuration(const string &filepath);
+    Configuration();
     unordered_map<string, string> &getConfigMap();
     set<string> &getStopWordSet();
 
