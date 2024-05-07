@@ -4,7 +4,8 @@
 using std::ofstream;
 
 void PageLib::create() {
-    auto configMap = _conf.getConfigMap();
+    Configuration *conf = Configuration::getInstance();
+    auto configMap = conf->getConfigMap();
 
     long total_size = 0;
     int docId = 0;
@@ -24,8 +25,9 @@ void PageLib::create() {
 }
 
 void PageLib::store() {
-    const string webLibPath = _conf.getConfigMap()["WEB_LIB_RAW"];
-    const string offsetLibPath = _conf.getConfigMap()["OFFSET_LIB_RAW"];
+    Configuration *conf = Configuration::getInstance();
+    const string webLibPath = conf->getConfigMap()["WEB_LIB_RAW"];
+    const string offsetLibPath = conf->getConfigMap()["OFFSET_LIB_RAW"];
 
     ofstream ofs(webLibPath);
 

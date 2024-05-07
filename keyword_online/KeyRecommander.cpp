@@ -35,9 +35,11 @@ void KeyRecommander::destory() {
     }
 }
 
-void KeyRecommander::dictInit(Configuration *config) {
+void KeyRecommander::dictInit() {
     KeyRecommander *pInstance = KeyRecommander::getInstance();
-    auto confMap = config->getConfigMap();
+    Configuration *conf = Configuration::getInstance();
+    auto confMap = conf->getConfigMap();
+
     auto enDictPath = confMap["EN_DICT"];
     auto chDictPath = confMap["CH_DICT"];
     auto chIdxPath = confMap["CH_IDX"];

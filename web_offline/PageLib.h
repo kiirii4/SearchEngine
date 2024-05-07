@@ -11,14 +11,13 @@ using std::map;
 using std::pair;
 class PageLib {
   public:
-    PageLib(Configuration &conf) : _conf(conf) {};
+    PageLib() {};
 
     void create();
 
     void store();
 
   private:
-    Configuration &_conf;
     DirScanner _dirScanner;
     FileProcessor _fileProcessor;
     vector<string> _pages;

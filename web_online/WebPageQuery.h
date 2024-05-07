@@ -36,7 +36,7 @@ class WebPageQuery {
 
     static WebPageQuery *getInstance();
 
-    static void dictInit(Configuration *config);
+    static void dictInit();
 
   private:
     static WebPageQuery *_pInstance;
@@ -58,13 +58,8 @@ class WebPageQuery {
     unordered_map<pair<string, size_t>, double, PairHash> _weightLib;
     vector<pair<string, double>> _queryWeights;
     vector<vector<double>> _webWeights;
-    // priority_queue<IndexWithCos, vector<IndexWithCos>, IndexComp>
-    // _topRelated;
-    // vector<IndexWithCos> _candidateIdxs;
 
     SplitTool *_splitTool = nullptr;
-    // unique_ptr<Configuration> _config;
-    // Configuration &_config;
 
   private:
     /**
@@ -102,4 +97,4 @@ class WebPageQuery {
     static double modulo(vector<pair<string, double>> &);
 };
 
-#endif //_WEBPAGEQUERY_H
+#endif //_WEBPAGEQUERY_Hconfiguration

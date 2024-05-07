@@ -58,7 +58,8 @@ void LRUCache::writeToFile() {
 }
 
 void LRUCache::readFromFile() {
-    auto confMap = _config->getConfigMap();
+    Configuration *config = Configuration::getInstance();
+    auto &confMap = config->getConfigMap();
     const string &cacheFile = confMap["CACHE_PATH"];
 
     ifstream ifs(cacheFile);

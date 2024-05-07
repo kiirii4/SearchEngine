@@ -29,20 +29,21 @@ struct pairCmp {
 static bool isChinese(const string &str) { return (str[0] & 0x80); }
 
 simhash::Simhasher *PageLibPreprocessor::createSimhasher() {
-    auto dictPath = _conf.getConfigMap()["DICT_PATH"].c_str();
-    auto hmmPath = _conf.getConfigMap()["HMM_PATH"].c_str();
-    auto idfPath = _conf.getConfigMap()["IDF_PATH"].c_str();
-    auto stopWordsPath = _conf.getConfigMap()["JIEBA_STOP_WORD_PATH"].c_str();
+    Configuration *conf = Configuration::getInstance();
+    auto dictPath = conf->getConfigMap()["DICT_PATH"].c_str();
+    auto hmmPath = conf->getConfigMap()["HMM_PATH"].c_str();
+    auto idfPath = conf->getConfigMap()["IDF_PATH"].c_str();
+    auto stopWordsPath = conf->getConfigMap()["JIEBA_STOP_WORD_PATH"].c_str();
     return new simhash::Simhasher(dictPath, hmmPath, idfPath, stopWordsPath);
 }
 
-PageLibPreprocessor::PageLibPreprocessor(Configuration &conf,
-                                         SplitTool *wordCutter)
-    : _conf(conf), _wordCutter(wordCutter), _psimhasher(createSimhasher()) {}
+PageLibPreprocessor::PageLibPreprocessor(SplitTool *wordCutter)
+    : _wordCutter(wordCutter), _psimhasher(createSimhasher()) {}
 
 void PageLibPreprocessor::cutRedundantPage() {
-    const string webPath = _conf.getConfigMap()["WEB_LIB_RAW"];
-    const string offsetPath = _conf.getConfigMap()["OFFSET_LIB_RAW"];
+    Configuration *conf = Configuration::getInstance();
+    const string webPath = conf->getConfigMap()["WEB_LIB_RAW"];
+    const string offsetPath = conf->getConfigMap()["OFFSET_LIB_RAW"];
 
     XMLDocument doc;
 
@@ -227,8 +228,9 @@ void PageLibPreprocessor::cutRedundantPage() {
 }
 
 void PageLibPreprocessor::bulidInvertIndexMap() {
+    Configuration *conf = Configuration::getInstance();
     size_t pageNum = _pageList.size();
-    auto stopWords = _conf.getStopWordSet();
+    auto stopWords = conf->getStopWordSet();
 
     map<string, size_t> docFrequecy; // 记录每个单词在几个文档中出现过
     map<pair<string, int>, size_t, pairCmp>
@@ -282,9 +284,10 @@ void PageLibPreprocessor::bulidInvertIndexMap() {
     }
 }
 void PageLibPreprocessor::storeOnDisk() {
-    auto webPath = _conf.getConfigMap()["WEB_LIB"];
-    auto offsetPath = _conf.getConfigMap()["OFFSET_LIB"];
-    auto invertPath = _conf.getConfigMap()["INVERT_IDX_LIB"];
+    Configuration *conf = Configuration::getInstance();
+    auto webPath = conf->getConfigMap()["WEB_LIB"];
+    auto offsetPath = conf->getConfigMap()["OFFSET_LIB"];
+    auto invertPath = conf->getConfigMap()["INVERT_IDX_LIB"];
 
     ofstream ofs(webPath);
     if (!ofs) {

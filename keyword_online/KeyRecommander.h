@@ -22,7 +22,7 @@ using std::vector;
 class KeyRecommander {
   public:
     static KeyRecommander *getInstance();
-    static void dictInit(Configuration *config);
+    static void dictInit();
     static string doQuery(const string &msg);
 
   private:

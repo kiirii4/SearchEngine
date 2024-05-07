@@ -9,15 +9,20 @@ using std::vector;
 
 class CacheManager {
   public:
-    CacheManager(int cacheSize);
-
-    void init(int cahcheSize);
+    static CacheManager *getInstance();
 
     LRUCache &getCache(int);
 
     void updateCache();
 
   private:
+    void init(int cahcheSize);
+    CacheManager(int cacheSize);
+    ~CacheManager() {}
+    static void destory();
+
+  private:
+    static CacheManager *_pInstance;
     vector<LRUCache> _caches;
 };
 

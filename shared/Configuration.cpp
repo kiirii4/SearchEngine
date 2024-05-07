@@ -9,6 +9,7 @@
 static string configPath = "../conf/init.config";
 
 Configuration::Configuration() {
+    ::atexit(&Configuration::destory);
     std::ifstream ifs(configPath);
     std::string line;
     string key, value;

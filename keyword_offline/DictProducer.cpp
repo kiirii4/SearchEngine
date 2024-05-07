@@ -30,16 +30,16 @@ std::size_t length(const std::string &str) {
     return ilen;
 }
 
-DictProducer::DictProducer(Configuration &config, SplitTool *tool,
-                           DirScanner *scanner)
-    : _config(config), _cuttor(tool), _scanner(scanner) {}
+DictProducer::DictProducer(SplitTool *tool, DirScanner *scanner)
+    : _cuttor(tool), _scanner(scanner) {}
 
 void DictProducer::buildEnDict() {
+    auto config = Configuration::getInstance();
     _dict.clear();
     _index.clear();
     _scanner->clear();
-    auto stopwords = _config.getStopWordSet();
-    auto engCorpus = _config.getConfigMap()["EN_PATH"];
+    auto stopwords = config->getStopWordSet();
+    auto engCorpus = config->getConfigMap()["EN_PATH"];
     _scanner->traverse(engCorpus);
     vector<string> files = _scanner->getFiles();
 
@@ -74,11 +74,12 @@ void DictProducer::buildEnDict() {
 }
 
 void DictProducer::buildCnDict() {
+    auto config = Configuration::getInstance();
     _dict.clear();
     _index.clear();
     _scanner->clear();
-    auto stopwords = _config.getStopWordSet();
-    auto chCorpus = _config.getConfigMap()["CH_PATH"];
+    auto stopwords = config->getStopWordSet();
+    auto chCorpus = config->getConfigMap()["CH_PATH"];
     _scanner->traverse(chCorpus);
     vector<string> files = _scanner->getFiles();
 
@@ -124,11 +125,9 @@ void DictProducer::createIndex() {
 }
 
 void DictProducer::store(const string &str) {
-    auto confMap = _config.getConfigMap();
-    string dictPath = (str == "EN") ? _config.getConfigMap()["EN_DICT"]
-                                    : _config.getConfigMap()["CH_DICT"];
-    string idxPath = (str == "EN") ? _config.getConfigMap()["EN_IDX"]
-                                   : _config.getConfigMap()["CH_IDX"];
+    auto confMap = Configuration::getInstance()->getConfigMap();
+    string dictPath = (str == "EN") ? confMap["EN_DICT"] : confMap["CH_DICT"];
+    string idxPath = (str == "EN") ? confMap["EN_IDX"] : confMap["CH_IDX"];
 
     ofstream ofs(dictPath);
     if (!ofs) {

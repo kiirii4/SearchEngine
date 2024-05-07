@@ -16,12 +16,28 @@ using std::string;
 using std::unordered_map;
 class Configuration {
   public:
-    Configuration();
+    static Configuration *getInstance() {
+        if (_pInstance == nullptr) {
+            _pInstance = new Configuration();
+        }
+        return _pInstance;
+    }
     unordered_map<string, string> &getConfigMap();
     set<string> &getStopWordSet();
 
   private:
+    Configuration();
+    ~Configuration() {}
+    static void destory() {
+        if (_pInstance != nullptr) {
+            delete _pInstance;
+            _pInstance = nullptr;
+        }
+    }
     void stop_wordsInit();
+
+  private:
+    static Configuration *_pInstance;
     unordered_map<string, string> _configMap;
     set<string> _stopWordSet;
 };

@@ -17,7 +17,7 @@ using std::vector;
 class DictProducer {
 
   public:
-    DictProducer(Configuration &config, SplitTool *tool, DirScanner *scanner);
+    DictProducer(SplitTool *tool, DirScanner *scanner);
 
     void buildEnDict();
 
@@ -26,7 +26,6 @@ class DictProducer {
   private:
     void createIndex();
     void store(const string &);
-    Configuration &_config;
     DirScanner *_scanner;
     vector<pair<string, int>> _dict;
     map<string, set<int>> _index;

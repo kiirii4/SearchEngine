@@ -59,7 +59,6 @@ static string getSummary(const string &str) {
 
 WebPageQuery *WebPageQuery::getInstance() {
     if (_pInstance == nullptr) {
-        Configuration *config(new Configuration());
         _pInstance = new WebPageQuery();
     }
     return _pInstance;
@@ -73,17 +72,17 @@ void WebPageQuery::destory() {
     }
 }
 
-void WebPageQuery::dictInit(Configuration *config) {
+void WebPageQuery::dictInit() {
+    Configuration *conf = Configuration::getInstance();
     WebPageQuery *pInstance = WebPageQuery::getInstance();
-    auto configMap = config->getConfigMap();
+    auto configMap = conf->getConfigMap();
     const char *dict_path = configMap["DICT_PATH"].c_str();
     const char *hmm_path = configMap["HMM_PATH"].c_str();
     const char *user_dict_path = configMap["USER_DICT_PATH"].c_str();
 
-    pInstance->_splitTool =
-        new SplitTool(*config, dict_path, hmm_path, user_dict_path);
+    pInstance->_splitTool = new SplitTool();
 
-    auto confMap = config->getConfigMap();
+    auto confMap = conf->getConfigMap();
 
     const string webLibPath = confMap["WEB_LIB"];
     const string offsetLibPath = confMap["OFFSET_LIB"];

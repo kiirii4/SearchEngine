@@ -7,20 +7,20 @@
 #include <iostream>
 
 void testPageLib() {
-    Configuration config;
-    PageLib pageLib(config);
+    Configuration *conf = Configuration::getInstance();
+    PageLib pageLib;
     pageLib.create();
     pageLib.store();
 }
 
 void testPageLibPreprocessor() {
-    Configuration config;
-    auto configMap = config.getConfigMap();
+    Configuration *config = Configuration::getInstance();
+    auto configMap = config->getConfigMap();
     const char *dict_path = configMap["DICT_PATH"].c_str();
     const char *hmm_path = configMap["HMM_PATH"].c_str();
     const char *user_dict_path = configMap["USER_DICT_PATH"].c_str();
-    SplitTool splitTool(config, dict_path, hmm_path, user_dict_path);
-    PageLibPreprocessor pageLibPreprocessor(config, &splitTool);
+    SplitTool splitTool;
+    PageLibPreprocessor pageLibPreprocessor(&splitTool);
     pageLibPreprocessor.cutRedundantPage();
     pageLibPreprocessor.bulidInvertIndexMap();
     pageLibPreprocessor.storeOnDisk();
@@ -28,8 +28,8 @@ void testPageLibPreprocessor() {
 }
 
 void testSimhasher() {
-    Configuration config;
-    auto configMap = config.getConfigMap();
+    Configuration *config = Configuration::getInstance();
+    auto configMap = config->getConfigMap();
     const char *dict_path = configMap["DICT_PATH"].c_str();
     const char *hmm_path = configMap["HMM_PATH"].c_str();
     const char *idf_path = configMap["IDF_PATH"].c_str();
@@ -42,8 +42,8 @@ void testSimhasher() {
 }
 
 void testXml2() {
-    Configuration config;
-    auto configMap = config.getConfigMap();
+    Configuration *config = Configuration::getInstance();
+    auto configMap = config->getConfigMap();
     const char *web_lib_raw = configMap["WEB_LIB_RAW"].c_str();
     std::cout << web_lib_raw << "\n";
     tinyxml2::XMLDocument doc;

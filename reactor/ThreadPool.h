@@ -22,7 +22,6 @@ class ThreadPool {
     size_t _thread_size;
     size_t _que_size;
     vector<unique_ptr<Thread>> _threads;
-    CacheManager _cacheManger;
     TaskQueue _taskque;
     bool _isExit;
 };

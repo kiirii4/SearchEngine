@@ -18,7 +18,7 @@ using std::unordered_map;
 
 class PageLibPreprocessor {
   public:
-    PageLibPreprocessor(Configuration &conf, SplitTool *wordCutter);
+    PageLibPreprocessor(SplitTool *wordCutter);
 
     void cutRedundantPage();
 
@@ -30,7 +30,6 @@ class PageLibPreprocessor {
     simhash::Simhasher *createSimhasher();
 
   private:
-    Configuration &_conf;
     unique_ptr<simhash::Simhasher> _psimhasher;
     vector<WebPage> _pageList;
     vector<std::tuple<int, size_t, size_t>> _offsetLib;

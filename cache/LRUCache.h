@@ -13,7 +13,7 @@ using std::unordered_map;
 
 class LRUCache {
   public:
-    LRUCache(Configuration *config) : _config() { readFromFile(); }
+    LRUCache() { readFromFile(); }
     void readFromFile();
 
     void addRecord(const string &key, const string &json);
@@ -33,7 +33,6 @@ class LRUCache {
   private:
     size_t _size{0};
     size_t _capacity{0};
-    Configuration *_config;
     list<pair<string, string>> _resultList;
     unordered_map<string, list<pair<string, string>>::iterator> _hashmap;
     list<pair<string, string>> _pendingUpdateList;

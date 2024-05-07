@@ -3,7 +3,7 @@
 
 ThreadPool::ThreadPool(size_t thread_size, size_t que_size)
     : _thread_size(thread_size), _que_size(que_size), _isExit(false),
-      _taskque(_que_size), _cacheManger(thread_size) {
+      _taskque(_que_size) {
     _threads.reserve(_thread_size);
 }
 
