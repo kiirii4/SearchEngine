@@ -11,11 +11,12 @@
 #ifndef _THREAD_H
 #define _THREAD_H
 
+extern __thread int cache_idx;
 class Thread {
   public:
     using ThreadCallBack = std::function<void()>;
     Thread() {}
-    Thread(ThreadCallBack &&);
+    Thread(ThreadCallBack &&, int cacheIdx);
 
     ~Thread();
 

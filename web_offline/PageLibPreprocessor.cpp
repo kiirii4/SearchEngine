@@ -7,6 +7,7 @@
 #include <unordered_set>
 
 using namespace tinyxml2;
+using std::ifstream;
 using std::ofstream;
 using std::ostringstream;
 using std::unordered_set;
@@ -41,41 +42,190 @@ PageLibPreprocessor::PageLibPreprocessor(Configuration &conf,
 
 void PageLibPreprocessor::cutRedundantPage() {
     const string webPath = _conf.getConfigMap()["WEB_LIB_RAW"];
+    const string offsetPath = _conf.getConfigMap()["OFFSET_LIB_RAW"];
 
     XMLDocument doc;
-    doc.LoadFile(webPath.c_str());
-    // doc.LoadFile("/home/x/3_cpp/SearchEngine/data/lib/webRaw.dat");
-    std::cout << webPath << "\n";
 
-    if (doc.ErrorID()) {
-        std::cout << "doc error id" << doc.ErrorID() << "\n";
-        Logerror("open webLib file failed");
+    // if (doc.ErrorID()) {
+    //     std::cout << "doc error id" << doc.ErrorID() << "\n";
+    //     Logerror("open webLib file failed");
+    //     return;
+    // }
+    ifstream ifs(offsetPath);
+    if (!ifs) {
+        Logerror("can't open offsetLib file");
         return;
     }
 
-    unordered_set<uint64_t, std::hash<uint64_t>, HashCmp> simHashSet;
-    XMLElement *root = doc.FirstChildElement("doc");
-    while (root) {
-        string title, link, desc;
-        title = root->FirstChildElement("title")->GetText();
-        link = root->FirstChildElement("link")->GetText();
-        desc = root->FirstChildElement("desc")->GetText();
-
-        uint64_t u64 = 0;
-        vector<pair<string, double>> res;
-
-        _psimhasher->extract(desc, res, topN);
-        _psimhasher->make(desc, topN, u64);
-        if (simHashSet.count(u64)) {
-            root = root->NextSiblingElement("doc");
-            continue;
-        }
-        simHashSet.insert(u64);
-        _pageList.emplace_back(title, link, desc, u64);
-        root = root->NextSiblingElement("doc");
+    ifstream ifs2(webPath);
+    if (!ifs2) {
+        Logerror("can't open webLib file");
+        return;
     }
-    return;
+
+    string line;
+    int docId = 0;
+    while (getline(ifs, line, '\n')) {
+        size_t id, offset, length;
+        std::istringstream iss(line);
+        iss >> id >> offset >> length;
+        _offsetLib.push_back({docId++, offset, length});
+    }
+
+    unordered_set<uint64_t, std::hash<uint64_t>, HashCmp> simHashSet;
+    int idx = 0;
+    size_t offset = 0;
+    int parseCnt = 0;
+    std::cout << "offset size:" << _offsetLib.size() << "\n";
+    while (idx < _offsetLib.size()) {
+        int docNum = 100;
+        size_t docSize = 0;
+        // 每100篇文章写入一次buf
+        while (idx < _offsetLib.size() && ((docNum--) > 0)) {
+            docSize += std::get<2>(_offsetLib[idx++]);
+        }
+        char buf[docSize + 1];
+        buf[docSize] = 0;
+        ifs2.seekg(offset);
+        ifs2.read(buf, docSize);
+        offset += docSize;
+
+        // 解析
+        XMLDocument doc;
+        doc.Parse(buf);
+        if (doc.ErrorID()) {
+            Loginfo("parse webLib failed.");
+            std::cout << doc.ErrorStr() << "\n";
+        }
+        XMLElement *root = doc.FirstChildElement("doc");
+
+        while (root) {
+            if (root->FirstChildElement("title") == nullptr) {
+                root = root->NextSiblingElement("doc");
+                continue;
+            }
+            if (root->FirstChildElement("title")->GetText() == nullptr) {
+                root = root->NextSiblingElement("doc");
+                continue;
+            }
+            if (root->FirstChildElement("link") == nullptr) {
+                root = root->NextSiblingElement("doc");
+                continue;
+            }
+            if (root->FirstChildElement("link")->GetText() == nullptr) {
+                root = root->NextSiblingElement("doc");
+                continue;
+            }
+            if (root->FirstChildElement("desc") == nullptr) {
+                root = root->NextSiblingElement("doc");
+                continue;
+            }
+            if (root->FirstChildElement("desc")->GetText() == nullptr) {
+                root = root->NextSiblingElement("doc");
+                continue;
+            }
+            string title = root->FirstChildElement("title")->GetText();
+            string link = root->FirstChildElement("link")->GetText();
+            string desc = root->FirstChildElement("desc")->GetText();
+
+            for (auto &c : title) {
+                if (c == '<' || c == '>') {
+                    c = '\"';
+                }
+            }
+
+            for (auto &c : link) {
+                if (c == '<' || c == '>') {
+                    c = '\"';
+                }
+            }
+
+            for (auto &c : desc) {
+                if (c == '<' || c == '>') {
+                    c = '\"';
+                }
+            }
+
+            // int pos = 0;
+            // while ((pos = title.find("<", pos) != string::npos)) {
+            //     title.replace(pos, 1, "\"");
+            //     pos++;
+            // }
+            // pos = 0;
+            // while ((pos = title.find(">", pos) != string::npos)) {
+            //     title.replace(pos, 1, "\"");
+            //     pos++;
+            // }
+
+            // pos = 0;
+            // while ((pos = link.find("<", pos) != string::npos)) {
+            //     link.replace(pos, 1, "\"");
+            //     pos++;
+            // }
+            // pos = 0;
+            // while ((pos = link.find(">", pos) != string::npos)) {
+            //     link.replace(pos, 1, "\"");
+            //     pos++;
+            // }
+
+            // pos = 0;
+            // while ((pos = desc.find("<", pos) != string::npos)) {
+            //     desc.replace(pos, 1, "\"");
+            //     pos++;
+            // }
+            // pos = 0;
+            // while ((pos = desc.find(">", pos) != string::npos)) {
+            //     desc.replace(pos, 1, "\"");
+            //     pos++;
+            // }
+            uint64_t u64 = 0;
+            vector<pair<string, double>> res;
+
+            _psimhasher->extract(desc, res, topN);
+            _psimhasher->make(desc, topN, u64);
+            if (simHashSet.count(u64)) {
+                root = root->NextSiblingElement("doc");
+                continue;
+            }
+            simHashSet.insert(u64);
+            _pageList.emplace_back(title, link, desc);
+            root = root->NextSiblingElement("doc");
+        }
+    }
+
+    // while ((pos = title.find("<", pos) != string::npos)) {
+    //     title.replace(pos, 1, "\"");
+    //     pos++;
+    // }
+    // pos = 0;
+    // while ((pos = title.find(">", pos) != string::npos)) {
+    //     title.replace(pos, 1, "\"");
+    //     pos++;
+    // }
+
+    // pos = 0;
+    // while ((pos = link.find("<", pos) != string::npos)) {
+    //     link.replace(pos, 1, "\"");
+    //     pos++;
+    // }
+    // pos = 0;
+    // while ((pos = link.find(">", pos) != string::npos)) {
+    //     link.replace(pos, 1, "\"");
+    //     pos++;
+    // }
+
+    // pos = 0;
+    // while ((pos = desc.find("<", pos) != string::npos)) {
+    //     desc.replace(pos, 1, "\"");
+    //     pos++;
+    // }
+    // pos = 0;
+    // while ((pos = desc.find(">", pos) != string::npos)) {
+    //     desc.replace(pos, 1, "\"");
+    //     pos++;
+    // }
 }
+
 void PageLibPreprocessor::bulidInvertIndexMap() {
     size_t pageNum = _pageList.size();
     auto stopWords = _conf.getStopWordSet();
@@ -110,27 +260,24 @@ void PageLibPreprocessor::bulidInvertIndexMap() {
         pageId++;
     }
 
-    std::cout << "sec\n";
     // 第二次遍历
     for (int docId = 0; docId < pageNum; docId++) {
         for (auto const &word : wordCounts[docId]) {
             auto frequency = termFrequency[{word, docId}];
             double idf = ::log2(pageNum / (docFrequecy[word] + 1));
-            (_invertIndexLib[word])[docId] = frequency * idf;
+            (*_invertIndexLib)[word][docId] = frequency * idf;
         }
     }
 
-    std::cout << "third\n";
     // 第三次遍历
     for (int docId = 0; docId < pageNum; docId++) {
         double totalWeight = 0;
         for (auto &word : wordCounts[docId]) {
-            totalWeight += ::pow(_invertIndexLib[word][docId], 2);
+            totalWeight += ::pow((*_invertIndexLib)[word][docId], 2);
         }
         totalWeight = ::sqrt(totalWeight);
         for (auto &word : wordCounts[docId]) {
-            _invertIndexLib[word][docId] =
-                _invertIndexLib[word][docId] / totalWeight;
+            (*_invertIndexLib)[word][docId] /= totalWeight;
         }
     }
 }
@@ -179,7 +326,7 @@ void PageLibPreprocessor::storeOnDisk() {
         Logerror("open invertLib file failed");
         return;
     }
-    for (auto const &index : _invertIndexLib) {
+    for (auto const &index : *_invertIndexLib) {
         ofs3 << index.first << " ";
         for (auto const &innerIndex : index.second) {
             ofs3 << innerIndex.first << " " << innerIndex.second << " ";

@@ -25,7 +25,6 @@ void testPageLibPreprocessor() {
     pageLibPreprocessor.bulidInvertIndexMap();
     pageLibPreprocessor.storeOnDisk();
     std::cout << "ok\n";
-    return;
 }
 
 void testSimhasher() {
@@ -57,6 +56,7 @@ void testXml2() {
 }
 
 int main() {
-    testPageLib();
+    // testPageLib();
+
     testPageLibPreprocessor();
 }

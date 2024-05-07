@@ -20,3 +20,11 @@
 [ERROR] [PageLibPreprocessor.cc:cutRedundantPage:51]open webLib file failed
 2024-05-05 10:21:18,354
 [ERROR] [PageLibPreprocessor.cc:cutRedundantPage:50]open webLib file failed
+2024-05-06 04:14:23,882
+[ERROR] [Configuration.cc:stop_wordsInit:35]open stop word file failed
+2024-05-06 04:14:23,883
+[ERROR] [DirScanner.cc:traverse:12]opendir error
+2024-05-06 04:14:23,884
+[ERROR] [PageLib.cc:store:33]can't open webLib file!
+2024-05-06 04:14:23,884
+[ERROR] [Configuration.cc:stop_wordsInit:35]open stop word file failed

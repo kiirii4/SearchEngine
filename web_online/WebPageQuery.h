@@ -1,12 +1,10 @@
-/**
- * Project SearchEngine
- */
-
 #ifndef _WEBPAGEQUERY_H
 #define _WEBPAGEQUERY_H
 
+#include "../shared/Configuration.h"
 #include "../shared/SplitTool.h"
 #include "../shared/WebPage.h"
+#include <memory>
 #include <queue>
 #include <set>
 #include <string>
@@ -18,6 +16,7 @@ using std::pair;
 using std::priority_queue;
 using std::set;
 using std::string;
+using std::unique_ptr;
 using std::unordered_map;
 using std::vector;
 // using Json = nlohmann::json;
@@ -31,50 +30,47 @@ struct PairHash {
     }
 };
 
-struct IndexComp;
-
-struct IndexWithCos {
-  public:
-    double _cos;
-    int _index;
-    friend IndexComp;
-};
-
-struct IndexComp {
-    bool operator()(const IndexWithCos &lhs, const IndexWithCos &rhs) {
-        return lhs._cos > rhs._cos;
-    }
-};
-
 class WebPageQuery {
   public:
-    WebPageQuery(const string &, SplitTool &tool, Configuration &);
+    static string doQuery(const string &key);
 
-    /**
-     * @param key
-     */
-    static string doQuery(string key);
+    static WebPageQuery *getInstance();
+
+    static void dictInit(Configuration *config);
 
   private:
-    int topK = 20;
+    static WebPageQuery *_pInstance;
+    WebPageQuery();
+    ~WebPageQuery() {
+        if (_splitTool != nullptr) {
+            delete _splitTool;
+            _splitTool = nullptr;
+        }
+    }
+
+    static void destory();
+
+  private:
+    int _topK = 20;
     vector<WebPage> _pages;
-    unordered_map<int, pair<int, int>> _offsetlib;
-    unordered_map<string, set<int>> _invertIndexLib;
-    unordered_map<pair<string, int>, double, PairHash> _weightLib;
+    unordered_map<int, pair<size_t, size_t>> _offsetlib;
+    unordered_map<string, set<size_t>> _invertIndexLib;
+    unordered_map<pair<string, size_t>, double, PairHash> _weightLib;
     vector<pair<string, double>> _queryWeights;
     vector<vector<double>> _webWeights;
     // priority_queue<IndexWithCos, vector<IndexWithCos>, IndexComp>
     // _topRelated;
     // vector<IndexWithCos> _candidateIdxs;
 
-    SplitTool &_splitTool;
-    Configuration &_config;
+    SplitTool *_splitTool = nullptr;
+    // unique_ptr<Configuration> _config;
+    // Configuration &_config;
 
   private:
     /**
      * @brief 加载网页库，网页偏移库，倒排索引库
      */
-    void loadLibrary();
+    void init();
 
     // 切分查询语句，得到每个单词的权重
     void getQueryWeights(string query);
@@ -85,22 +81,25 @@ class WebPageQuery {
     // 求出符合交集的网页的下标数组
     vector<int> getIntersection(const vector<set<int>> &candidateSequence);
 
-    // 通过交集查权重索引，获得每个网页中待查单词的权重, 返回网页权重数组的索引
+    // 通过交集查权重索引，获得每个网页中待查单词的权重,
+    // 返回网页权重数组的索引
     vector<int> indexWeightInit(vector<int> &intersection);
 
-    string createJson(const vector<int> &result);
+    static string createJson(const vector<int> &result);
+
+    static string createJson();
 
     // 传入一个网页中待查词的权重，计算与查询语句的余弦相似度
-    double calcCos(vector<double> &webWeight);
+    static double calcCos(vector<double> &webWeight);
 
     // 求内积
-    double dotProduct(vector<pair<string, double>> &queryWeights,
-                      vector<double> &webWeights);
+    static double dotProduct(vector<pair<string, double>> &queryWeights,
+                             vector<double> &webWeights);
 
     // 求模
-    double modulo(vector<double> &);
+    static double modulo(vector<double> &);
 
-    double modulo(vector<pair<string, double>> &);
+    static double modulo(vector<pair<string, double>> &);
 };
 
 #endif //_WEBPAGEQUERY_H

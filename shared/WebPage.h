@@ -9,23 +9,16 @@ using std::map;
 using std::string;
 using std::vector;
 
-class WebPage {
-    friend class PageLibPreprocessor;
+struct WebPage {
 
   public:
     WebPage(const string &docTitle, const string &docUrl,
-            const string &docContent, uint64_t simahsh)
-        : _docTitle(docTitle), _docUrl(docUrl), _docContent(docContent),
-          _simahsh(simahsh) {}
-    string &getDoc();
+            const string &docContent)
+        : _docTitle(docTitle), _docUrl(docUrl), _docContent(docContent) {}
 
-  private:
     string _docTitle;
     string _docUrl;
     string _docContent;
-    uint64_t _simahsh;
 };
-
-inline string &WebPage::getDoc() { return _docContent; }
 
 #endif //_WEBPAGE_H
