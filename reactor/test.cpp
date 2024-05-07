@@ -4,10 +4,17 @@
 #include "../web_online/WebPageQuery.h"
 #include <iostream>
 void test() {
-    Configuration config;
-    KeyRecommander::dictInit(&config);
-    WebPageQuery::dictInit(&config);
-    EventServer server(4, 10, "127.0.0.1", 8888, 3000);
+    KeyRecommander::dictInit();
+    WebPageQuery::dictInit();
+    Configuration *conf = Configuration::getInstance();
+    int threadNum = std::stoi(conf->getConfigMap()["THREAD_NUM"]);
+    int queSize = std::stoi(conf->getConfigMap()["QUEUE_SIZE"]);
+    const string &ip = conf->getConfigMap()["SERVER_IP"];
+    unsigned short port = std::stoi(conf->getConfigMap()["SERVER_PORT"]);
+
+    int timeout = std::stoi(conf->getConfigMap()["TIMEOUT"]);
+
+    EventServer server(threadNum, queSize, ip, port, 3000);
     server.start();
 
     std::cout << "server over" << "\n";

@@ -16,9 +16,8 @@ __thread int cache_idx = 0;
         }                                                                      \
     }
 
-Thread::Thread(ThreadCallBack &&cb, int cacheIdx) : _cb(std::move(cb)) {
-    cache_idx = cacheIdx;
-}
+Thread::Thread(ThreadCallBack &&cb, int cacheIdx)
+    : _cb(std::move(cb)), _cacheIdx(cacheIdx) {}
 
 Thread::~Thread() {}
 
@@ -41,6 +40,8 @@ void Thread::stop() {
  */
 void *Thread::threadFunc(void *arg) {
     Thread *pth = static_cast<Thread *>(arg);
+    cache_idx = pth->_cacheIdx;
+    std::cout << "cache_idx = " << cache_idx << "\n";
     if (pth) {
         pth->_cb();
     } else {

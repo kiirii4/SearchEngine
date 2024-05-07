@@ -25,6 +25,7 @@ class Thread {
     void stop();
 
   private:
+    int _cacheIdx;
     pthread_t _thid{0};
     bool _isRunning{false};
     ThreadCallBack _cb;

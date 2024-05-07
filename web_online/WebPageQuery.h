@@ -57,7 +57,6 @@ class WebPageQuery {
     unordered_map<string, set<size_t>> _invertIndexLib;
     unordered_map<pair<string, size_t>, double, PairHash> _weightLib;
     vector<pair<string, double>> _queryWeights;
-    vector<vector<double>> _webWeights;
 
     SplitTool *_splitTool = nullptr;
 

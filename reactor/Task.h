@@ -1,7 +1,9 @@
 #ifndef __TASK__
 #define __TASK__
 
+#include "../cache/CacheManager.h"
 #include "../keyword_online/KeyRecommander.h"
+#include "../reactor/Thread.h"
 #include "../web_online/WebPageQuery.h"
 #include "TcpConnection.h"
 #include <string>
@@ -63,6 +65,15 @@ class WebTask : public Mytask {
         : Mytask(msg, con) {}
 
     void process() override {
+        CacheManager *cacheManager = CacheManager::getInstance();
+
+        LRUCache cache = cacheManager->getCache(cache_idx);
+        string cacheRes = cache.getRecord(_msg);
+
+        if (!cacheRes.empty()) {
+            _con->sendInLoop(cacheRes);
+            return;
+        }
         const string &result = WebPageQuery::doQuery(_msg);
         _con->sendInLoop(result);
     }
@@ -73,7 +84,19 @@ class KeyWordTask : public Mytask {
     KeyWordTask(const string &msg, const TcpConnectionPtr &con)
         : Mytask(msg, con) {}
     void process() override {
+        CacheManager *cacheManager = CacheManager::getInstance();
+
+        LRUCache cache = cacheManager->getCache(cache_idx);
+        string cacheRes = cache.getRecord(_msg);
+
+        if (!cacheRes.empty()) {
+            std::cout << "cache hit" << "\n";
+            _con->sendInLoop(cacheRes);
+            return;
+        }
+        std::cout << "cache miss" << "\n";
         const string &result = KeyRecommander::doQuery(_msg);
+        cache.addRecord(_msg, result);
         _con->sendInLoop(result);
     }
 };

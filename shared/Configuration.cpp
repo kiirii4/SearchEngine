@@ -8,6 +8,8 @@
 
 static string configPath = "../conf/init.config";
 
+Configuration *Configuration::_pInstance = nullptr;
+
 Configuration::Configuration() {
     ::atexit(&Configuration::destory);
     std::ifstream ifs(configPath);

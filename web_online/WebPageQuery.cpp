@@ -10,8 +10,10 @@
 #include <fstream>
 #include <iterator>
 #include <sstream>
+#include <utility>
 #include <wfrest/json.hpp>
 
+#define DEBUG
 using std::ifstream;
 using namespace tinyxml2;
 using Json = nlohmann::json;
@@ -22,19 +24,25 @@ struct IndexComp;
 
 struct IndexWithCos {
   public:
+    IndexWithCos(double cos, int index) : _cos(cos), _index(index) {}
     double _cos;
     int _index;
 };
 
-struct IndexComp {
-    bool operator()(const IndexWithCos &lhs, const IndexWithCos &rhs) {
-        return lhs._cos > rhs._cos;
-    }
-};
+bool operator<(const IndexWithCos &lhs, const IndexWithCos &rhs) {
+    return (lhs._cos == rhs._cos) ? (lhs._index > rhs._index)
+                                  : (lhs._cos > rhs._cos);
+}
+
+// struct IndexComp {
+//     bool operator()(const IndexWithCos &lhs, const IndexWithCos &rhs) {
+//         return lhs._cos > rhs._cos;
+//     }
+// };
 
 struct Cmp {
     bool operator()(const pair<int, double> &p1, const pair<int, double> &p2) {
-        return p1.second > p2.second;
+        return p1.second < p2.second;
     }
 };
 
@@ -162,7 +170,7 @@ void WebPageQuery::dictInit() {
         pInstance->_pages.emplace_back(title, link, summary);
     }
 
-#if 0
+#ifdef DEBUG
     std::cout << "pages size " << pInstance->_pages.size() << std::endl;
     std::cout << "offset size: " << pInstance->_offsetlib.size() << std::endl;
 #endif
@@ -182,10 +190,13 @@ string WebPageQuery::doQuery(const string &key) {
 
     pInstance->_queryWeights.clear();
     auto wordVec = pInstance->_splitTool->cut(key);
+#ifdef DEBUG
+    std::cout << "split query word set:" << "\n";
     for (auto &word : wordVec) {
-        if (!word.empty())
+        if (!word.empty() || word != "")
             std::cout << word << "\n";
     }
+#endif
     unordered_map<string, int> termFrequency;
     for (auto &word : wordVec) {
         if (word.empty() || word == " " || word == "\n") {
@@ -206,7 +217,7 @@ string WebPageQuery::doQuery(const string &key) {
         word.second *= weightNormlization;
     }
 
-#if 0
+#ifdef DEBUG
     std::cout << "query weights:" << std::endl;
     for (auto &word : pInstance->_queryWeights) {
         std::cout << word.first << " " << word.second << std::endl;
@@ -220,7 +231,7 @@ string WebPageQuery::doQuery(const string &key) {
         candidateSequence.emplace_back();
         candidateSequence.back().insert(tmp.begin(), tmp.end());
     }
-#if 0
+#ifdef DEBUG
     int i = 0;
     std::cout << "candidate set" << "\n";
     for (auto &candidate : candidateSequence) {
@@ -233,7 +244,8 @@ string WebPageQuery::doQuery(const string &key) {
 #endif
     // 求出符合交集的网页的下标数组
     set<int> candidateResult;
-    if (candidateSequence.size() < pInstance->_queryWeights.size()) {
+    if (candidateSequence.empty() ||
+        candidateSequence.size() < pInstance->_queryWeights.size()) {
         return createJson();
     }
     set<int> intersection = candidateSequence[0];
@@ -247,74 +259,46 @@ string WebPageQuery::doQuery(const string &key) {
             intersection.swap(tmp);
         }
     }
-
+#ifdef DEBUG
     std::cout << "intersection size: " << intersection.size() << std::endl;
     for (auto &idx : intersection) {
-        std::cout << idx << std::endl;
+        std::cout << idx << " ";
     }
+    std::cout << "\n";
+#endif
 
     vector<double> weights;
-    vector<int> weightsIndex;
+    vector<IndexWithCos> idxCos;
     for (auto &idx : intersection) {
         for (auto &word : pInstance->_queryWeights) {
-            weights.push_back(pInstance->_weightLib[{word.first, idx}]);
+            double weight = pInstance->_weightLib[{word.first, idx}];
+            weights.push_back(weight);
         }
-        pInstance->_webWeights.push_back(weights);
-        weightsIndex.push_back(idx);
-    }
-
-    auto webWeight = pInstance->_webWeights;
-    int topK = pInstance->_topK;
-    priority_queue<pair<int, double>, vector<pair<int, double>>, Cmp> pq;
-    size_t idx = 0;
-    for (auto &weights : webWeight) {
         double cosin = calcCos(weights);
-        pq.emplace(idx, cosin);
-        idx++;
+        // pInstance->_webWeights.push_back(weights);
+        idxCos.emplace_back(cosin, idx);
+    }
+    // todo
+    int topK = pInstance->_topK;
+    priority_queue<IndexWithCos> pq;
+    for (auto &idx : idxCos) {
+        pq.push(idx);
     }
     vector<int> result;
     for (int i = 0; i < topK && !pq.empty(); i++) {
-        result.push_back(pq.top().first);
+        result.push_back(pq.top()._index);
         pq.pop();
     }
+#ifdef DEBUG
+    std::cout << "result idx: ";
+    for (auto &idx : result) {
+        std::cout << idx << " ";
+    }
+    std::cout << "\n";
+#endif
+
     return createJson(result);
 }
-
-/* vector<set<int>> WebPageQuery::getCandidateIdxs() { return candidateSequence;
- * } */
-
-/* vector<int> */
-/* WebPageQuery::getIntersection(const vector<set<int>> &candidateSequence) { */
-/*     set<int> candidateResult; */
-/*     if (candidateSequence.size() < _queryWeights.size()) { */
-/*         return vector<int>(); */
-/*     } */
-/*     set<int> result = candidateSequence[0]; */
-/*     if (candidateSequence.size() >= 2) { */
-/*         for (size_t i = 1; i < candidateSequence.size(); i++) { */
-/*             set<int> tmp; */
-/*             std::set_intersection( */
-/*                 result.begin(), result.end(), candidateSequence[i].begin(),
- */
-/*                 candidateSequence[i].end(), std::inserter(tmp, tmp.begin()));
- */
-/*         } */
-/*     } */
-/*     return vector<int>(result.begin(), result.end()); */
-/* } */
-
-/* vector<int> WebPageQuery::indexWeightInit(vector<int> &intersection) { */
-/*     vector<double> weights; */
-/*     vector<int> weightsIndex; */
-/*     for (auto &idx : intersection) { */
-/*         for (auto &word : _queryWeights) { */
-/*             weights.push_back(_weightLib[{word.first, idx}]); */
-/*         } */
-/*         _webWeights.push_back(weights); */
-/*         weightsIndex.push_back(idx); */
-/*     } */
-/*     return weightsIndex; */
-/* } */
 
 double WebPageQuery::dotProduct(vector<pair<string, double>> &queryWeights,
                                 vector<double> &webWeights) {
@@ -355,6 +339,9 @@ string WebPageQuery::createJson(const vector<int> &result) {
     Json json;
     vector<WebPage> pages = getInstance()->_pages;
     string ret;
+    if (result.size() == 0) {
+        return "No answer.\n";
+    }
     for (const auto &idx : result) {
         json["title"] = pages[idx]._docTitle;
         json["url"] = pages[idx]._docUrl;
@@ -364,7 +351,4 @@ string WebPageQuery::createJson(const vector<int> &result) {
     return ret;
 }
 
-string WebPageQuery::createJson() {
-    Json json;
-    return "No answer.\n";
-}
+string WebPageQuery::createJson() { return "No answer.\n"; }

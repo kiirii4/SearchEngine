@@ -106,13 +106,17 @@ void KeyRecommander::dictInit() {
 }
 
 string KeyRecommander::doQuery(const string &msg) {
+#ifdef DEBUG
     std::cout << "begin query, msg :" << msg << "\n";
+#endif
     KeyRecommander *pInstance = KeyRecommander::getInstance();
     vector<string> charas = cutChar(msg);
+#ifdef DEBUG
     std::cout << "chara is :" << " ";
     for (auto chara : charas) {
         std::cout << chara << "\n";
     }
+#endif
     set<size_t> chWords;
     set<size_t> enWords;
     for (const auto &chara : charas) {

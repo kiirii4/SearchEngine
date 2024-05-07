@@ -1,6 +1,8 @@
 #include "CacheManager.h"
 #include "../shared/mylog.h"
 
+CacheManager *CacheManager::_pInstance = nullptr;
+
 CacheManager *CacheManager::getInstance() {
     if (_pInstance == nullptr) {
         Configuration *config = Configuration::getInstance();
@@ -17,6 +19,7 @@ CacheManager::CacheManager(int cacheSize) {
 }
 
 void CacheManager::init(int cacheSize) {
+    // _caches.reserve(2 * (cacheSize + 1));
     _caches.reserve(cacheSize + 1);
     for (int i = 0; i < cacheSize; ++i) {
         _caches.push_back(LRUCache());

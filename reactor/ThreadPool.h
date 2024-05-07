@@ -6,7 +6,6 @@
 #include <functional>
 #include <memory>
 
-extern __thread int cache_idx;
 class ThreadPool {
   public:
     using Task = function<void()>;
