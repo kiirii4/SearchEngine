@@ -1,8 +1,10 @@
 /despatch/
 /keyword_offline/*.log
 /keyword_offline/*.o
-/keyword_online/*.log
-/keyword_online/*.o
+/web_online/*.log
+/web_online/*.o
+/web_offline/*.log
+/web_offline/*.o
 /reactor/*.log
 /reactor/*.o
 /shared/*.log
